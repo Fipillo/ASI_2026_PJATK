@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+
+# Logs
+logs/*.csv
+logs/*.log
+
+# MLflow
+mlruns/
+
+# AutoGluon models
+AutoGluonModels*/
+models/final_model/
+models/*.pkl
+models/*.joblib
+
+# Large data files
+data/raw/*.csv
+data/raw/*.zip
+data/raw/*.parquet
+
+# Processed full datasets
+data/processed/*.csv
+!data/processed/*sample*.csv
+!data/processed/README.md
+
+# Reports generated locally
+reports/*.html

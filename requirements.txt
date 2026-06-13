@@ -1,0 +1,11 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+autogluon
+mlflow
+fastapi
+uvicorn
+pydantic
+python-multipart
