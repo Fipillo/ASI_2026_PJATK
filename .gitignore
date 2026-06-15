@@ -39,3 +39,6 @@ data/processed/*.csv
 
 # Reports generated locally
 reports/*.html
+
+# PyCharm / JetBrains IDE
+.idea/
