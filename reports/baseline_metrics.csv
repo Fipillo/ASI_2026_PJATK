@@ -1,0 +1,2 @@
+model,split,accuracy,precision,recall,f1,roc_auc,test_rows,features_count
+RandomForestClassifier,chronological_80_20,0.618810051736881,0.6469489414694894,0.6910542068506818,0.6682746422254382,0.6592772097261621,5412,48
