@@ -1,14 +1,16 @@
-# Auto-generated code export from notebooks/nba_modeling.ipynb
-# This file is used as a reference for refactoring notebook logic into src/.
+# Code export from notebooks/nba_modeling.ipynb
+# Reference file for code review and refactoring
 
 # %% Cell 1
-!pip install autogluon
-
-from google.colab import drive
-drive.mount('/content/drive')
-
 import os
-os.chdir("/content/drive/MyDrive/Colab Notebooks")
+
+try:
+    from google.colab import drive
+    drive.mount('/content/drive')
+    DATA_DIR = '/content/drive/MyDrive/Colab Notebooks'
+except ImportError:
+    DATA_DIR = os.getcwd()
+
 
 # %% Cell 2
 import pandas as pd
@@ -17,8 +19,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, roc_curve, auc
 from autogluon.tabular import TabularDataset, TabularPredictor
-
-DATA_DIR = '/content/drive/MyDrive/Colab Notebooks'
 
 # %% Cell 4
 games = pd.read_csv(f'{DATA_DIR}/games.csv')
@@ -38,7 +38,7 @@ team_stats = details.groupby(['GAME_ID', 'TEAM_ID']).agg({
 
 print(f"Games loaded: {len(games)} rows")
 print(f"Team stats aggregated: {len(team_stats)} rows")
-display(team_stats.head())
+print(team_stats.head())
 
 # %% Cell 6
 def get_advanced_features(df, team_stats_df):
@@ -224,7 +224,7 @@ games_v5 = games_v5.merge(
 games_v5 = games_v5.drop(columns=['GAME_ID', 'HOME_TEAM_ID', 'VISITOR_TEAM_ID'], errors='ignore').fillna(0.5)
 
 print(f"games_v5 shape: {games_v5.shape}")
-display(games_v5.head())
+print(games_v5.head())
 
 # %% Cell 15
 sos_df = get_sos(adv_perf[['GAME_ID', 'TEAM_ID', 'DATE', 'OPPONENT_ID']], season_stats)
@@ -244,7 +244,7 @@ games_v6['SOS_DIFF'] = games_v6['HOME_SOS'] - games_v6['VISITOR_SOS']
 games_v6 = games_v6.drop(columns=['GAME_ID', 'HOME_TEAM_ID', 'VISITOR_TEAM_ID'], errors='ignore').fillna(0.5)
 
 print(f"games_v6 shape: {games_v6.shape}")
-display(games_v6.head())
+print(games_v6.head())
 
 # %% Cell 17
 games_v7 = games_v6.copy()
@@ -262,7 +262,7 @@ games_v7 = games_v7.merge(v_wr_stats, left_on='VISITOR_TEAM_ID', right_index=Tru
 games_v7 = games_v7.drop(columns=['HOME_TEAM_ID', 'VISITOR_TEAM_ID'], errors='ignore').fillna(0.5)
 
 print(f"games_v7 shape: {games_v7.shape}")
-display(games_v7.head())
+print(games_v7.head())
 
 # %% Cell 19
 elo_df = calculate_elo(games)
@@ -274,7 +274,7 @@ games_v8['ELO_DIFF'] = games_v8['HOME_ELO'] - games_v8['VISITOR_ELO']
 games_v8 = games_v8.drop(columns=['GAME_ID'], errors='ignore')
 
 print(f"games_v8 shape: {games_v8.shape}")
-display(games_v8.head())
+print(games_v8.head())
 
 # %% Cell 21
 train_data = TabularDataset(games_v8)
@@ -287,12 +287,12 @@ predictor_v8 = TabularPredictor(
 predictor_v8.fit(train_data, presets='best_quality', num_stack_levels=2, time_limit=2400)
 
 print("\n--- NBA v8 Leaderboard ---")
-display(predictor_v8.leaderboard())
+print(predictor_v8.leaderboard())
 
 # Feature importance for baseline model
 importance_df = predictor_v8.feature_importance(data=train_data, subsample_size=2500, num_shuffle_sets=3)
 print("Top 10 features by importance (v8):")
-display(importance_df.head(10))
+print(importance_df.head(10))
 
 # %% Cell 23
 # Drop features with zero or negative importance (add noise, no signal)
@@ -333,7 +333,7 @@ predictor_deep.fit(
 )
 
 print("\n--- Deep Ensemble Leaderboard ---")
-display(predictor_deep.leaderboard())
+print(predictor_deep.leaderboard())
 
 # %% Cell 25
 # Performance metrics
@@ -391,7 +391,7 @@ comparison_df = pd.DataFrame({
 })
 
 print("--- Baseline vs. Optimized Model Comparison ---")
-display(comparison_df)
+print(comparison_df)
 print(f"\nDeep Ensemble accuracy: {acc_deep:.2%} ({pct_improvement:.2f}% relative improvement over v8)")
 
 # Feature importance for deep ensemble
@@ -437,8 +437,8 @@ for stat in stats_to_normalize:
 team_stats_z_scores = team_stats_norm[['GAME_ID', 'TEAM_ID', 'SEASON', 'PTS_Z', 'REB_Z', 'AST_Z']]
 
 print("League-Relative Z-scores calculated successfully.")
-display(season_stats_ref.tail(3))
-display(team_stats_z_scores.head())
+print(season_stats_ref.tail(3))
+print(team_stats_z_scores.head())
 
 # %% Cell 30
 perf_dates = adv_perf[['GAME_ID', 'TEAM_ID', 'DATE']]
@@ -460,7 +460,7 @@ weighted_features = weighted_features.rename(columns={
 chronological_z = pd.concat([chronological_z, weighted_features], axis=1)
 
 print("Weighted Momentum features calculated.")
-display(chronological_z.dropna(subset=['WEIGHTED_MOMENTUM_PTS']).head())
+print(chronological_z.dropna(subset=['WEIGHTED_MOMENTUM_PTS']).head())
 
 # %% Cell 32
 chronological_z['GAME_COUNT'] = chronological_z.groupby(['TEAM_ID', 'SEASON']).cumcount()
@@ -494,7 +494,7 @@ games_v9_refined = games_v9_refined.drop(
 ).dropna()
 
 print(f"games_v9_refined shape: {games_v9_refined.shape}")
-display(games_v9_refined.head())
+print(games_v9_refined.head())
 
 # %% Cell 34
 custom_hyperparams_v9 = {
@@ -529,5 +529,5 @@ predictor_v9_final.fit(
 )
 
 print("\n--- NBA v9 Final Ensemble Leaderboard ---")
-display(predictor_v9_final.leaderboard())
+print(predictor_v9_final.leaderboard())
 

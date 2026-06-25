@@ -23,8 +23,8 @@ def main():
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write("# Auto-generated code export from notebooks/nba_modeling.ipynb\n")
-        f.write("# This file is used as a reference for refactoring notebook logic into src/.\n\n")
+    f.write("# Code export from notebooks/nba_modeling.ipynb\n")
+    f.write("# Reference file for code review and refactoring\n\n")
         f.writelines(code_cells)
 
     print(f"Exported {len(code_cells)} code cells to {OUTPUT_PATH}")
