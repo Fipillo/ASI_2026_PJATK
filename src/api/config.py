@@ -1,0 +1,62 @@
+from pathlib import Path
+
+MODEL_PATH = Path("models/baseline_random_forest.pkl")
+LOG_PATH = Path("logs/api.log")
+
+# Feature columns in the exact order the model was trained on.
+# Derived from src/train.py: all columns from the processed CSV after dropping
+# GAME_DATE_EST and HOME_TEAM_WINS.
+FEATURE_COLUMNS = [
+    "SEASON",
+    # Home team features
+    "HOME_REST_DAYS",
+    "HOME_LAST_GAME_WON",
+    "HOME_SEASON_WIN_RATE",
+    "HOME_ROLLING_PTS_5",
+    "HOME_ROLLING_AST_5",
+    "HOME_ROLLING_REB_5",
+    "HOME_ROLLING_FG_PCT_5",
+    "HOME_ROLLING_FT_PCT_5",
+    "HOME_ROLLING_FG3_PCT_5",
+    "HOME_ROLLING_PTS_15",
+    "HOME_ROLLING_AST_15",
+    "HOME_ROLLING_REB_15",
+    "HOME_ROLLING_FG_PCT_15",
+    "HOME_ROLLING_FT_PCT_15",
+    "HOME_ROLLING_FG3_PCT_15",
+    # Visitor team features
+    "VISITOR_REST_DAYS",
+    "VISITOR_LAST_GAME_WON",
+    "VISITOR_SEASON_WIN_RATE",
+    "VISITOR_ROLLING_PTS_5",
+    "VISITOR_ROLLING_AST_5",
+    "VISITOR_ROLLING_REB_5",
+    "VISITOR_ROLLING_FG_PCT_5",
+    "VISITOR_ROLLING_FT_PCT_5",
+    "VISITOR_ROLLING_FG3_PCT_5",
+    "VISITOR_ROLLING_PTS_15",
+    "VISITOR_ROLLING_AST_15",
+    "VISITOR_ROLLING_REB_15",
+    "VISITOR_ROLLING_FG_PCT_15",
+    "VISITOR_ROLLING_FT_PCT_15",
+    "VISITOR_ROLLING_FG3_PCT_15",
+    # Elo ratings
+    "HOME_ELO",
+    "VISITOR_ELO",
+    # Differential features (home minus visitor)
+    "REST_DIFF",
+    "WIN_RATE_DIFF",
+    "ELO_DIFF",
+    "PTS_DIFF_5",
+    "PTS_DIFF_15",
+    "AST_DIFF_5",
+    "AST_DIFF_15",
+    "REB_DIFF_5",
+    "REB_DIFF_15",
+    "FG_PCT_DIFF_5",
+    "FG_PCT_DIFF_15",
+    "FT_PCT_DIFF_5",
+    "FT_PCT_DIFF_15",
+    "FG3_PCT_DIFF_5",
+    "FG3_PCT_DIFF_15",
+]
