@@ -259,7 +259,7 @@ def build_match_features(
             output[f"HOME_ROLLING_{col}_15"] - output[f"VISITOR_ROLLING_{col}_15"]
         )
 
-    output = output.drop(columns=["GAME_ID", "HOME_TEAM_ID", "VISITOR_TEAM_ID"])
+    output = output.drop(columns=["GAME_ID"])
 
     for col in output.columns:
         if col not in ["GAME_DATE_EST", TARGET_COLUMN]:

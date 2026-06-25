@@ -49,10 +49,10 @@ def chronological_train_test_split(df: pd.DataFrame, test_size: float = 0.2):
     train_df = df.iloc[:split_idx].copy()
     test_df = df.iloc[split_idx:].copy()
 
-    X_train = train_df.drop(columns=[TARGET_COLUMN, DATE_COLUMN])
+    X_train = train_df.drop(columns=[TARGET_COLUMN, DATE_COLUMN, "HOME_TEAM_ID", "VISITOR_TEAM_ID"], errors="ignore")
     y_train = train_df[TARGET_COLUMN].astype(int)
 
-    X_test = test_df.drop(columns=[TARGET_COLUMN, DATE_COLUMN])
+    X_test = test_df.drop(columns=[TARGET_COLUMN, DATE_COLUMN, "HOME_TEAM_ID", "VISITOR_TEAM_ID"], errors="ignore")
     y_test = test_df[TARGET_COLUMN].astype(int)
 
     return X_train, X_test, y_train, y_test
