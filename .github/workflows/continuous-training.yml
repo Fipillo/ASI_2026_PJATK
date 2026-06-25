@@ -1,0 +1,70 @@
+name: Continuous Training
+
+on:
+  workflow_dispatch:
+
+jobs:
+  train:
+    name: Train Model
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-ci.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-ci.txt
+
+      # ------------------------------------------------------------------ #
+      # DATA: This workflow requires data/processed/nba_features_pregame.csv
+      #
+      # Options to provide it:
+      #   1. Re-upload from a previous run:
+      #      Download the "processed-features" artifact from a prior run
+      #      of this workflow (stored for 90 days).
+      #      GitHub currently does not support cross-run artifact downloads
+      #      with the default action, so use option 2 or 3 for first run.
+      #
+      #   2. Commit the file directly (simplest for a university project):
+      #      git add -f data/processed/nba_features_pregame.csv
+      #      git commit -m "add: processed features for training workflow"
+      #
+      #   3. Run feature engineering locally and push the features file.
+      # ------------------------------------------------------------------ #
+      - name: Verify features file exists
+        run: |
+          if [ ! -f "data/processed/nba_features_pregame.csv" ]; then
+            echo "::error::data/processed/nba_features_pregame.csv not found."
+            echo ""
+            echo "This workflow requires pre-engineered features. See the workflow"
+            echo "header comment for instructions on how to provide this file."
+            exit 1
+          fi
+          ROW_COUNT=$(wc -l < data/processed/nba_features_pregame.csv)
+          echo "Features file found: ${ROW_COUNT} rows (including header)"
+
+      - name: Train model
+        run: python -m src.train
+
+      - name: Upload trained model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model-run-${{ github.run_number }}
+          path: |
+            models/baseline_random_forest.pkl
+            reports/baseline_metrics.csv
+          retention-days: 90
+
+      - name: Upload processed features (for subsequent runs)
+        uses: actions/upload-artifact@v4
+        with:
+          name: processed-features
+          path: data/processed/nba_features_pregame.csv
+          retention-days: 90
