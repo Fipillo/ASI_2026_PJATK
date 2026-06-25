@@ -1,0 +1,30 @@
+name: nba-prediction
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pandas
+  - numpy
+  - jsonschema
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - pytest
+  - jupyter
+  - ipython
+  - pip:
+    - kedro==0.18.14
+    - mlflow>=2.0.0
+    - streamlit>=1.0.0
+    - xgboost>=2.0.0
+    - lightgbm>=4.0.0
+    - catboost>=1.2.0
+    - autogluon>=1.0.0
+    - fastapi>=0.95.0
+    - uvicorn[standard]>=0.21.0
+    - pydantic>=2.0.0
+    - python-multipart>=0.0.5
+    - joblib>=1.2.0
+    - pyyaml>=6.0

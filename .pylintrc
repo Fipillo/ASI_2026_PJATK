@@ -1,0 +1,40 @@
+[MAIN]
+# Use all available CPU cores for analysis.
+jobs = 0
+
+[FORMAT]
+# Line length consistent with the project (100 chars).
+max-line-length = 100
+
+[MESSAGES CONTROL]
+disable =
+    # Module-level docstrings are optional in this project.
+    C0114,
+    # W0603: Using global statement is intentional in model_loader.py.
+    W0603,
+    # W1514: open() without explicit encoding — not critical for this project.
+    W1514,
+    # R0801: Duplicate code — too noisy across training/feature modules.
+    R0801,
+    # R0903: Too few public methods — triggers on Pydantic models.
+    R0903,
+
+[DESIGN]
+# Allow ML functions to accept more arguments (e.g. build_match_features).
+max-args = 10
+# Allow larger classes where needed (e.g. Pydantic request schemas).
+max-attributes = 15
+# Allow single-method classes.
+min-public-methods = 1
+
+[SIMILARITIES]
+# Minimum lines for duplicate-code detection.
+min-similarity-lines = 12
+
+[BASIC]
+# Allow short loop variable names common in data science code.
+good-names = i, j, k, n, x, y, df, e, _
+
+[TYPECHECK]
+# Suppress errors for dynamic attributes on pandas / numpy objects.
+ignored-modules = numpy, pandas

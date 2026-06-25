@@ -3,9 +3,14 @@ numpy
 matplotlib
 seaborn
 scikit-learn
+streamlit
 autogluon
 mlflow
 fastapi
 uvicorn
 pydantic
 python-multipart
+kedro
+xgboost
+lightgbm
+catboost
