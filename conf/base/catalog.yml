@@ -1,0 +1,41 @@
+games:
+  type: pandas.CSVDataSet
+  filepath: data/raw/games.csv
+
+details:
+  type: pandas.CSVDataSet
+  filepath: data/raw/games_details.csv
+  load_args:
+    low_memory: false
+
+features:
+  type: pandas.CSVDataSet
+  filepath: data/processed/nba_features_pregame.csv
+
+baseline_model:
+  type: pickle.PickleDataSet
+  filepath: models/baseline_random_forest.pkl
+
+X_test_baseline:
+  type: pandas.CSVDataSet
+  filepath: data/processed/X_test_baseline.csv
+
+y_test_baseline:
+  type: pandas.CSVDataSet
+  filepath: data/processed/y_test_baseline.csv
+
+comparison_models:
+  type: pickle.PickleDataSet
+  filepath: models/comparison_models.pkl
+
+autogluon_model:
+  type: pickle.PickleDataSet
+  filepath: models/autogluon_predictor.pkl
+
+autogluon_metrics:
+  type: yaml.YAMLDataSet
+  filepath: reports/autogluon_metrics.yml
+
+baseline_metrics:
+  type: yaml.YAMLDataSet
+  filepath: reports/baseline_metrics.yml
