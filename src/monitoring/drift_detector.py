@@ -4,8 +4,6 @@ import logging
 from pathlib import Path
 from typing import Any
 
-import numpy as np
-
 logger = logging.getLogger(__name__)
 
 DRIFT_STATS_FILE = Path("logs/drift_stats.json")
@@ -26,7 +24,7 @@ class DriftDetector:
                 with open(self.stats_file, "r", encoding="utf-8") as f:
                     return json.load(f)
             except Exception as e:
-                logger.warning(f"Could not load drift stats: {e}")
+                logger.warning("Could not load drift stats: %s", e)
         return {}
 
     def check_drift(self, features: dict[str, float], threshold: float = 0.2) -> dict[str, Any]:
@@ -41,7 +39,14 @@ class DriftDetector:
             Dictionary with drift results for each feature
         """
         if not self.reference_stats:
-            return {"error": "No reference statistics available", "drifted_features": []}
+            return {
+                "error": "No reference statistics available",
+                "drifted_features": [],
+                "num_drifted": 0,
+                "total_features": len(features),
+                "drift_ratio": 0.0,
+                "details": {},
+            }
 
         drifted_features = []
         drift_details = {}
@@ -100,4 +105,4 @@ class DriftDetector:
         with open(self.stats_file, "w", encoding="utf-8") as f:
             json.dump(stats, f, indent=2)
 
-        logger.info(f"Updated reference statistics with {len(stats)} features")
+        logger.info("Updated reference statistics with %d features", len(stats))

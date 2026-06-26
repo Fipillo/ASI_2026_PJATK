@@ -1,10 +1,16 @@
+"""Baseline model training module."""
 from pathlib import Path
 
 import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    roc_auc_score,
+)
 
 
 FEATURES_PATH = Path("data/processed/nba_features_pregame.csv")
@@ -49,16 +55,22 @@ def chronological_train_test_split(df: pd.DataFrame, test_size: float = 0.2):
     train_df = df.iloc[:split_idx].copy()
     test_df = df.iloc[split_idx:].copy()
 
-    X_train = train_df.drop(columns=[TARGET_COLUMN, DATE_COLUMN, "HOME_TEAM_ID", "VISITOR_TEAM_ID"], errors="ignore")
+    x_train = train_df.drop(
+        columns=[TARGET_COLUMN, DATE_COLUMN, "HOME_TEAM_ID", "VISITOR_TEAM_ID"],
+        errors="ignore",
+    )
     y_train = train_df[TARGET_COLUMN].astype(int)
 
-    X_test = test_df.drop(columns=[TARGET_COLUMN, DATE_COLUMN, "HOME_TEAM_ID", "VISITOR_TEAM_ID"], errors="ignore")
+    x_test = test_df.drop(
+        columns=[TARGET_COLUMN, DATE_COLUMN, "HOME_TEAM_ID", "VISITOR_TEAM_ID"],
+        errors="ignore",
+    )
     y_test = test_df[TARGET_COLUMN].astype(int)
 
-    return X_train, X_test, y_train, y_test
+    return x_train, x_test, y_train, y_test
 
 
-def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> RandomForestClassifier:
+def train_model(x_train: pd.DataFrame, y_train: pd.Series) -> RandomForestClassifier:
     """Train a simple baseline Random Forest classifier."""
     model = RandomForestClassifier(
         n_estimators=200,
@@ -68,14 +80,14 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> RandomForestClassi
         n_jobs=-1,
     )
 
-    model.fit(X_train, y_train)
+    model.fit(x_train, y_train)
     return model
 
 
-def evaluate_model(model, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
+def evaluate_model(model, x_test: pd.DataFrame, y_test: pd.Series) -> dict:
     """Evaluate trained model on test data."""
-    y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test)[:, 1]
+    y_pred = model.predict(x_test)
+    y_proba = model.predict_proba(x_test)[:, 1]
 
     metrics = {
         "model": "RandomForestClassifier",
@@ -85,8 +97,8 @@ def evaluate_model(model, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
         "recall": recall_score(y_test, y_pred, zero_division=0),
         "f1": f1_score(y_test, y_pred, zero_division=0),
         "roc_auc": roc_auc_score(y_test, y_proba),
-        "test_rows": len(X_test),
-        "features_count": X_test.shape[1],
+        "test_rows": len(x_test),
+        "features_count": x_test.shape[1],
     }
 
     return metrics
@@ -110,15 +122,15 @@ def main() -> None:
     print(f"Dataset shape: {df.shape}")
 
     print("Splitting data chronologically...")
-    X_train, X_test, y_train, y_test = chronological_train_test_split(df)
-    print(f"Train shape: {X_train.shape}")
-    print(f"Test shape: {X_test.shape}")
+    x_train, x_test, y_train, y_test = chronological_train_test_split(df)
+    print(f"Train shape: {x_train.shape}")
+    print(f"Test shape: {x_test.shape}")
 
     print("Training baseline Random Forest model...")
-    model = train_model(X_train, y_train)
+    model = train_model(x_train, y_train)
 
     print("Evaluating model...")
-    metrics = evaluate_model(model, X_test, y_test)
+    metrics = evaluate_model(model, x_test, y_test)
 
     print("Metrics:")
     for key, value in metrics.items():

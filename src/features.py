@@ -119,8 +119,9 @@ def add_team_history_features(performance: pd.DataFrame) -> pd.DataFrame:
     for window in [5, 15]:
         for col in rolling_columns:
             df[f"ROLLING_{col}_{window}"] = (
-                df.groupby("TEAM_ID")[col]
-                .transform(lambda s: s.shift(1).rolling(window=window, min_periods=1).mean())
+                df.groupby("TEAM_ID")[col].transform(
+                    lambda s, w=window: s.shift(1).rolling(window=w, min_periods=1).mean()
+                )
             )
 
     df["SEASON_GAMES_BEFORE"] = df.groupby(["TEAM_ID", "SEASON"]).cumcount()
@@ -291,6 +292,7 @@ def save_outputs(features: pd.DataFrame) -> None:
 
 
 def main() -> None:
+    """Build and save pre-game features dataset."""
     print("Loading raw data...")
     games, details = load_raw_data()
 

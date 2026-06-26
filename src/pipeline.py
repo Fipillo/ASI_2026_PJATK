@@ -3,6 +3,7 @@ from src.train import main as run_training
 
 
 def main() -> None:
+    """Run the full ML pipeline: feature engineering and model training."""
     print("=" * 80)
     print("NBA Game Winner Prediction — Local ML Pipeline")
     print("=" * 80)

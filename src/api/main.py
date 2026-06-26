@@ -42,12 +42,18 @@ async def health_check() -> dict[str, str]:
 
 @app.post("/api/v1/predict", response_model=PredictionResponse)
 async def predict(request: GamePredictionRequest) -> PredictionResponse:
-    logger.info("POST /predict  home=%s  visitor=%s  date=%s", request.home_team, request.visitor_team, request.game_date)
-    
+    """Predict the outcome of an NBA game based on input features."""
+    logger.info(
+        "POST /predict  home=%s  visitor=%s  date=%s",
+        request.home_team,
+        request.visitor_team,
+        request.game_date,
+    )
+
     # Extract features as dictionary
     feature_array = request.to_feature_array()
     feature_dict = request.to_feature_dict()
-    
+
     # Check for data drift
     drift_result = drift_detector.check_drift(feature_dict)
     if drift_result["num_drifted"] > 0:
@@ -55,24 +61,36 @@ async def predict(request: GamePredictionRequest) -> PredictionResponse:
             "Data drift detected: %d/%d features drifted (ratio: %.2f)",
             drift_result["num_drifted"],
             drift_result["total_features"],
-            drift_result["drift_ratio"]
+            drift_result["drift_ratio"],
         )
-    
+
     try:
         prediction_class, probabilities = model_loader.predict(feature_array)
     except RuntimeError as exc:
         logger.error("Model not loaded: %s", exc)
-        raise HTTPException(status_code=500, detail="Model is not available.")
+        raise HTTPException(
+            status_code=500, detail="Model is not available."
+        ) from exc
     except Exception as exc:
         logger.error("Inference error: %s", exc, exc_info=True)
-        raise HTTPException(status_code=500, detail="Prediction failed.")
+        raise HTTPException(status_code=500, detail="Prediction failed.") from exc
 
     home_prob = round(float(probabilities[1]), 4)
     visitor_prob = round(float(probabilities[0]), 4)
-    prediction_label = "home_team_wins" if prediction_class == 1 else "visitor_team_wins"
-    game_id = f"{request.game_date.strftime('%Y%m%d')}_{request.home_team}_{request.visitor_team}"
+    prediction_label = (
+        "home_team_wins" if prediction_class == 1 else "visitor_team_wins"
+    )
+    game_id = (
+        f"{request.game_date.strftime('%Y%m%d')}_"
+        f"{request.home_team}_{request.visitor_team}"
+    )
 
-    logger.info("game_id=%s  result=%s  drift_ratio=%.2f", game_id, prediction_label, drift_result["drift_ratio"])
+    logger.info(
+        "game_id=%s  result=%s  drift_ratio=%.2f",
+        game_id,
+        prediction_label,
+        drift_result["drift_ratio"],
+    )
 
     return PredictionResponse(
         prediction=prediction_label,

@@ -30,21 +30,36 @@ app = FastAPI(title="NBA Game Prediction API", version="1.0.0", lifespan=lifespa
 
 
 @app.post("/api/v1/predict", response_model=PredictionResponse)
-async def predict(request: GamePredictionRequest) -> PredictionResponse:
-    logger.info("POST /predict  home=%s  visitor=%s  date=%s", request.home_team, request.visitor_team, request.game_date)
+async def predict_endpoint(request: GamePredictionRequest) -> PredictionResponse:
+    """Predict the outcome of an NBA game based on input features."""
+    logger.info(
+        "POST /predict  home=%s  visitor=%s  date=%s",
+        request.home_team,
+        request.visitor_team,
+        request.game_date,
+    )
     try:
-        prediction_class, probabilities = model_loader.predict(request.to_feature_array())
+        prediction_class, probabilities = model_loader.predict(
+            request.to_feature_array()
+        )
     except RuntimeError as exc:
         logger.error("Model not loaded: %s", exc)
-        raise HTTPException(status_code=500, detail="Model is not available.")
+        raise HTTPException(
+            status_code=500, detail="Model is not available."
+        ) from exc
     except Exception as exc:
         logger.error("Inference error: %s", exc, exc_info=True)
-        raise HTTPException(status_code=500, detail="Prediction failed.")
+        raise HTTPException(status_code=500, detail="Prediction failed.") from exc
 
     home_prob = round(float(probabilities[1]), 4)
     visitor_prob = round(float(probabilities[0]), 4)
-    prediction_label = "home_team_wins" if prediction_class == 1 else "visitor_team_wins"
-    game_id = f"{request.game_date.strftime('%Y%m%d')}_{request.home_team}_{request.visitor_team}"
+    prediction_label = (
+        "home_team_wins" if prediction_class == 1 else "visitor_team_wins"
+    )
+    game_id = (
+        f"{request.game_date.strftime('%Y%m%d')}_"
+        f"{request.home_team}_{request.visitor_team}"
+    )
 
     logger.info("game_id=%s  result=%s", game_id, prediction_label)
 

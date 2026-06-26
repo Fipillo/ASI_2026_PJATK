@@ -1,5 +1,5 @@
+"""Model loading and prediction utilities."""
 import logging
-from pathlib import Path
 
 import joblib
 import numpy as np
@@ -7,22 +7,33 @@ import numpy as np
 from src.api.config import MODEL_PATH
 
 logger = logging.getLogger(__name__)
-_model = None
+_MODEL = None
 
 
 def load() -> None:
-    global _model
+    """Load the trained model from disk."""
+    global _MODEL
     if not MODEL_PATH.exists():
         raise FileNotFoundError(f"Model file not found: {MODEL_PATH}.")
-    _model = joblib.load(MODEL_PATH)
+    _MODEL = joblib.load(MODEL_PATH)
     logger.info("Model loaded from %s", MODEL_PATH)
 
 
 def is_model_loaded() -> bool:
-    return _model is not None
+    """Check if model is currently loaded."""
+    return _MODEL is not None
 
 
 def predict(features: np.ndarray) -> tuple[int, np.ndarray]:
-    if _model is None:
+    """
+    Generate prediction for input features.
+
+    Args:
+        features: Input feature array
+
+    Returns:
+        Tuple of (predicted_class, probabilities)
+    """
+    if _MODEL is None:
         raise RuntimeError("Model is not loaded.")
-    return int(_model.predict(features)[0]), _model.predict_proba(features)[0]
+    return int(_MODEL.predict(features)[0]), _MODEL.predict_proba(features)[0]

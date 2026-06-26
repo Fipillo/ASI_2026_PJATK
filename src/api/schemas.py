@@ -7,6 +7,8 @@ from src.api.config import FEATURE_COLUMNS
 
 
 class GamePredictionRequest(BaseModel):
+    """Request model for NBA game prediction endpoint."""
+
     game_date: date
     home_team: str
     visitor_team: str
@@ -67,17 +69,25 @@ class GamePredictionRequest(BaseModel):
     @field_validator("home_team", "visitor_team", mode="before")
     @classmethod
     def normalise_team_code(cls, v: str) -> str:
+        """Normalize team code to uppercase."""
         return v.strip().upper()
 
     def to_feature_array(self) -> np.ndarray:
-        return np.array([getattr(self, col.lower()) for col in FEATURE_COLUMNS], dtype=float).reshape(1, -1)
+        """Convert request features to numpy array for model input."""
+        return np.array(
+            [getattr(self, col.lower()) for col in FEATURE_COLUMNS], dtype=float
+        ).reshape(1, -1)
 
     def to_feature_dict(self) -> dict[str, float]:
         """Convert features to dictionary for drift detection."""
-        return {col.lower(): float(getattr(self, col.lower())) for col in FEATURE_COLUMNS}
+        return {
+            col.lower(): float(getattr(self, col.lower())) for col in FEATURE_COLUMNS
+        }
 
 
 class PredictionResponse(BaseModel):
+    """Response model for game prediction."""
+
     prediction: str
     confidence: float
     probability: dict[str, float]
